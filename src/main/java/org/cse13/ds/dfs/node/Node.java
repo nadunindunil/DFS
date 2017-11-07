@@ -1,6 +1,7 @@
 package org.cse13.ds.dfs.node;
 
-import org.cse13.ds.dfs.node.rmi.RmiServerImpl;
+import org.cse13.ds.dfs.node.rmi.RMIJoinRequest;
+import org.cse13.ds.dfs.node.rmi.RMIServerImpl;
 import org.cse13.ds.dfs.node.utils.BootstrapCommunicator;
 
 import java.io.BufferedReader;
@@ -81,7 +82,7 @@ public class Node {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            registry.rebind("RMIServer", new RmiServerImpl());
+            registry.rebind("RMIServer", new RMIServerImpl(this));
             System.out.println("Server is Starting...");
 
         } catch (RemoteException ex) {
@@ -103,12 +104,12 @@ public class Node {
 
     }
 
-    public void connect(List<Neighbour> nodeList) throws IOException {
+    public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
 
-        if (nodeList != null) {
-            for (Neighbour node : nodeList) {
-                if (node.getPort() != this.node_port) {
-                    node.rmiConnector.nodeJoinRequest();
+        if (nodeList != null){
+            for (Neighbour node : nodeList){
+                if (node.getPort() != this.node_port){
+                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),getNode_port()));
                 }
 
             }

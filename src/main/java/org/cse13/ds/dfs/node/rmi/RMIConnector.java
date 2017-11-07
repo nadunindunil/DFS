@@ -10,12 +10,12 @@ import java.rmi.RemoteException;
  */
 public class RMIConnector {
 
-    RmiServer rmiServer;
+    RMIServer rmiServer;
 
     public RMIConnector(String ip,int port) throws RemoteException, NotBoundException, MalformedURLException {
 
         String url = getRMIUrl(ip,port);
-        rmiServer = (RmiServer) Naming.lookup(url);
+        rmiServer = (RMIServer) Naming.lookup(url);
 
     }
 
@@ -26,8 +26,8 @@ public class RMIConnector {
     }
 
 
-    public void nodeJoinRequest() throws RemoteException {
-        rmiServer.nodeJoinRequestHandle();
+    public void nodeJoinRequest(RMIRequest rmiRequest) throws RemoteException, MalformedURLException, NotBoundException {
+        rmiServer.nodeJoinRequestHandle(rmiRequest);
     }
 
     public void fileSearchRequest() throws RemoteException {
