@@ -30,6 +30,10 @@ public class RMIConnector {
         rmiServer.nodeJoinRequestHandle();
     }
 
+    public void fileSearchRequest() throws RemoteException {
+        rmiServer.fileSearchRequestHandle();
+    }
+
     public void nodeLeaveRequest() {
 
     }
@@ -39,10 +43,6 @@ public class RMIConnector {
     }
 
     public void nodeLeaveOkRequest() {
-
-    }
-
-    public void fileSearchRequest() {
 
     }
 

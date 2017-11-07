@@ -33,7 +33,7 @@ public class RmiServerImpl extends UnicastRemoteObject implements RmiServer {
 
     @Override
     public void fileSearchRequestHandle() {
-
+        System.out.println("YEEEIIII");
     }
 
     @Override
