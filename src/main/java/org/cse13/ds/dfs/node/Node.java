@@ -1,19 +1,19 @@
 package org.cse13.ds.dfs.node;
 
+import org.cse13.ds.dfs.node.rmi.RMIFileSearchRequest;
 import org.cse13.ds.dfs.node.rmi.RMIJoinRequest;
 import org.cse13.ds.dfs.node.rmi.RMILeaveRequest;
 import org.cse13.ds.dfs.node.rmi.RMIServerImpl;
 import org.cse13.ds.dfs.node.utils.BootstrapCommunicator;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 
 public class Node {
@@ -25,19 +25,19 @@ public class Node {
 
     private BootstrapCommunicator bootstrapCommunicator = new BootstrapCommunicatorImpl();
 
-    public Node(String ip_address){
+    public Node(String ip_address) {
         this.ip_address = ip_address;
         this.node_port = getPort();
         this.name = null;
     }
 
-    public Node(String ip_address, String name){
+    public Node(String ip_address, String name) {
         this.ip_address = ip_address;
         this.node_port = getPort();
         this.name = name;
     }
 
-    private int getPort(){
+    private int getPort() {
         Random r = new Random();
         return Math.abs(r.nextInt()) % 6000 + 3000;
     }
@@ -50,23 +50,23 @@ public class Node {
         return node_port;
     }
 
-    public void addNeighbour(Neighbour neighbour){
+    public void addNeighbour(Neighbour neighbour) {
         this.MyNeighbours.add(neighbour);
         printNeighbours();
     }
 
-    public void removeNeighbour(String ipAddress, int port){
-        if (MyNeighbours.size() != 0){
-            for (Neighbour node : MyNeighbours){
-                if (Objects.equals(node.getIp(), ipAddress) && node.getPort() == port){
+    public void removeNeighbour(String ipAddress, int port) {
+        if (MyNeighbours.size() != 0) {
+            for (Neighbour node : MyNeighbours) {
+                if (Objects.equals(node.getIp(), ipAddress) && node.getPort() == port) {
                     MyNeighbours.remove(node);
                 }
             }
         }
     }
 
-    private void printNeighbours(){
-        for (Neighbour n : MyNeighbours){
+    private void printNeighbours() {
+        for (Neighbour n : MyNeighbours) {
             System.out.println("Neighbour: " + n.getPort() + "," + n.getIp());
         }
     }
@@ -96,7 +96,7 @@ public class Node {
             public void run() {
                 try {
                     gracefulDeparture();
-                    bootstrapCommunicator.unregister(ip_address,node_port,name);
+                    bootstrapCommunicator.unregister(ip_address, node_port, name);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (NotBoundException e) {
@@ -117,10 +117,9 @@ public class Node {
                 }
 
             }
-        }else{
+        } else {
             System.out.println("null in " + name);
         }
-
     }
 
     private void gracefulDeparture() throws IOException, NotBoundException {
@@ -131,7 +130,36 @@ public class Node {
     }
 
     private List<Neighbour> register() throws IOException, NotBoundException {
-         return bootstrapCommunicator.register(ip_address,node_port,name);
+        return bootstrapCommunicator.register(ip_address, node_port, name);
+    }
+
+    //read keyboard input
+    public void readStdin() { //get input from command line
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            while (true) {
+                String outMessage = stdin.readLine();
+
+                if (outMessage.contains("ser")) {
+                    System.out.println("AAAA");
+                    for (Neighbour node : MyNeighbours) {
+                        if (node.getPort() != this.node_port) {
+                            System.out.println("BBBB");
+                            node.rmiConnector.fileSearchRequest(new RMIFileSearchRequest("Test.txt", 3, ip_address,node_port,node.getIp(),
+                                    node.getPort()));
+                        }
+                    }
+                } else {
+                    System.out.println("null in " + name);
+                }
+            }
+        } catch (RemoteException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
