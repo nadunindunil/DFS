@@ -19,7 +19,7 @@ public class Node {
     private NodeCommunicator nodeCommunicator;
     private List<Neighbour> MyNeighbours = new ArrayList<>();
 
-    private BootstrapCommunicator datagramBootstrap = new BootstrapCommunicatorImpl();
+    private BootstrapCommunicator bootstrapCommunicator = new BootstrapCommunicatorImpl();
 
     public Node(String ip_address){
         this.ip_address = ip_address;
@@ -82,7 +82,7 @@ public class Node {
             public void run() {
                 try {
                     gracefulDeparture();
-                    datagramBootstrap.unregister(ip_address,node_port,name);
+                    bootstrapCommunicator.unregister(ip_address,node_port,name);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -112,7 +112,7 @@ public class Node {
     }
 
     private List<Neighbour> register() throws IOException {
-         return datagramBootstrap.register(ip_address,node_port,name);
+         return bootstrapCommunicator.register(ip_address,node_port,name);
     }
 
 }
