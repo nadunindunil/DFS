@@ -10,18 +10,13 @@ import java.rmi.RemoteException;
 /**
  * Created by nadunindunil on 11/7/17.
  */
-public class RMIJoinRequest extends RMIRequest{
-
-    public RMIJoinRequest(String fromIP, int fromPort, String toIP, int toPort) {
+public class RMIJoinOKRequest extends RMIRequest {
+    public RMIJoinOKRequest(String fromIP, int fromPort, String toIP, int toPort) {
         super(fromIP, fromPort, toIP, toPort);
     }
 
     @Override
     public void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException {
-
-        Neighbour neighbour = new Neighbour(getFromIP(),getFromPort());
-        node.addNeighbour(neighbour);
-
-        neighbour.rmiConnector.nodeJoinOkRequest(new RMIJoinOKRequest(getToIP(),getToPort(),getFromIP(),getFromPort()));
+        node.addNeighbour(new Neighbour(getFromIP(),getFromPort()));
     }
 }

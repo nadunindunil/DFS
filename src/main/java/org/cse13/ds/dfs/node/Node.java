@@ -109,7 +109,8 @@ public class Node {
         if (nodeList != null){
             for (Neighbour node : nodeList){
                 if (node.getPort() != this.node_port){
-                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),getNode_port()));
+                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),
+                            node.getPort()));
                 }
 
             }
@@ -121,6 +122,7 @@ public class Node {
 
     private void gracefulDeparture() throws IOException {
         for (Neighbour node : MyNeighbours){
+            // TODO
         }
     }
 

@@ -34,8 +34,8 @@ public class RMIConnector {
 
     }
 
-    public void nodeJoinOkRequest() {
-
+    public void nodeJoinOkRequest(RMIRequest rmiRequest) throws RemoteException, MalformedURLException, NotBoundException {
+        rmiServer.nodeJoinRequestHandle(rmiRequest);
     }
 
     public void nodeLeaveOkRequest() {
