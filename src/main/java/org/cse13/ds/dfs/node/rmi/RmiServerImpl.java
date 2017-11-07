@@ -1,19 +1,27 @@
 package org.cse13.ds.dfs.node.rmi;
 
+import org.cse13.ds.dfs.node.Node;
+
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Created by nadunindunil on 11/7/17.
  */
-public class RmiServerImpl extends UnicastRemoteObject implements RmiServer {
+public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
 
-    public RmiServerImpl() throws RemoteException {
+    private Node node;
+
+    public RMIServerImpl(Node node) throws RemoteException {
+        this.node = node;
     }
 
+
     @Override
-    public void nodeJoinRequestHandle() {
-        System.out.println("inside node join handler");
+    public void nodeJoinRequestHandle(RMIRequest rmiRequest) throws RemoteException, MalformedURLException, NotBoundException {
+        rmiRequest.handle(this.node);
     }
 
     @Override
