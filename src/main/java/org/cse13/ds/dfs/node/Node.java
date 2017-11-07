@@ -1,10 +1,13 @@
 package org.cse13.ds.dfs.node;
 
+import org.cse13.ds.dfs.node.rmi.RmiServerImpl;
 import org.cse13.ds.dfs.node.utils.BootstrapCommunicator;
-import org.cse13.ds.dfs.node.utils.NodeCommunicator;
-import org.cse13.ds.dfs.node.utils.NodeServer;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +19,6 @@ public class Node {
     private final String ip_address;
     private final int node_port;
     private final String name;
-    private NodeCommunicator nodeCommunicator;
     private List<Neighbour> MyNeighbours = new ArrayList<>();
 
     private BootstrapCommunicator bootstrapCommunicator = new BootstrapCommunicatorImpl();
@@ -67,14 +69,24 @@ public class Node {
         }
     }
 
-    public void start() throws IOException {
-
-        NodeServer nodeServer = new NodeServerImpl(this);
-        nodeCommunicator = new NodeCommunicatorImpl(this);
+    public void start() throws IOException, NotBoundException {
 
         List<Neighbour> nodeList = register();
 
-        nodeServer.start();
+        System.setProperty("java.rmi.server.hostname", this.getIp_address());
+        try {
+            Registry registry = null;
+            try {
+                registry = LocateRegistry.createRegistry(this.getNode_port());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            registry.rebind("RMIServer", new RmiServerImpl());
+            System.out.println("Server is Starting...");
+
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
 
         connect(nodeList);
 
@@ -96,8 +108,9 @@ public class Node {
         if (nodeList != null){
             for (Neighbour node : nodeList){
                 if (node.getPort() != this.node_port){
-                    nodeCommunicator.connect(node.getIp(),node.getPort());
+                    node.rmiConnector.nodeJoinRequest();
                 }
+
             }
         }else{
             System.out.println("null in " + name);
@@ -107,11 +120,10 @@ public class Node {
 
     private void gracefulDeparture() throws IOException {
         for (Neighbour node : MyNeighbours){
-            nodeCommunicator.disconnect(node.getIp(),node.getPort());
         }
     }
 
-    private List<Neighbour> register() throws IOException {
+    private List<Neighbour> register() throws IOException, NotBoundException {
          return bootstrapCommunicator.register(ip_address,node_port,name);
     }
 

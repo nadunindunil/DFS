@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -38,7 +41,7 @@ public class Request {
 
     }
 
-    public static List<Neighbour> decodeRegisterResponse(String response){
+    public static List<Neighbour> decodeRegisterResponse(String response) throws RemoteException, NotBoundException, MalformedURLException {
 
         System.out.println(response);
         StringTokenizer st = new StringTokenizer(response, " ");
