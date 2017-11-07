@@ -30,16 +30,16 @@ public class RMIConnector {
         rmiServer.nodeJoinRequestHandle(rmiRequest);
     }
 
-    public void fileSearchRequest() throws RemoteException {
-        rmiServer.fileSearchRequestHandle();
+    public void fileSearchRequest(RMIRequest rmiRequest) throws RemoteException, MalformedURLException, NotBoundException {
+        rmiServer.fileSearchRequestHandle(rmiRequest);
     }
 
     public void nodeLeaveRequest() {
 
     }
 
-    public void nodeJoinOkRequest() {
-
+    public void nodeJoinOkRequest(RMIRequest rmiRequest) throws RemoteException, MalformedURLException, NotBoundException {
+        rmiServer.nodeJoinOkRequestHandle(rmiRequest);
     }
 
     public void nodeLeaveOkRequest() {

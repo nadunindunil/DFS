@@ -1,5 +1,6 @@
 package org.cse13.ds.dfs.node;
 
+import org.cse13.ds.dfs.node.rmi.RMIFileSearchRequest;
 import org.cse13.ds.dfs.node.rmi.RMIJoinRequest;
 import org.cse13.ds.dfs.node.rmi.RMIServerImpl;
 import org.cse13.ds.dfs.node.utils.BootstrapCommunicator;
@@ -109,7 +110,8 @@ public class Node {
         if (nodeList != null){
             for (Neighbour node : nodeList){
                 if (node.getPort() != this.node_port){
-                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),getNode_port()));
+                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),
+                            node.getPort()));
                 }
 
             }
@@ -119,7 +121,8 @@ public class Node {
     }
 
     private void gracefulDeparture() throws IOException {
-        for (Neighbour node : MyNeighbours) {
+        for (Neighbour node : MyNeighbours){
+            // TODO
         }
     }
 
@@ -136,10 +139,11 @@ public class Node {
 
                 if (outMessage.contains("ser")) {
                     System.out.println("AAAA");
-                    for (Neighbour n : MyNeighbours) {
-                        if (n.getPort() != this.node_port) {
+                    for (Neighbour node : MyNeighbours) {
+                        if (node.getPort() != this.node_port) {
                             System.out.println("BBBB");
-                            n.rmiConnector.fileSearchRequest();
+                            node.rmiConnector.fileSearchRequest(new RMIFileSearchRequest("Test.txt", 3, ip_address,node_port,node.getIp(),
+                                    node.getPort()));
                         }
                     }
                 } else {
@@ -150,6 +154,8 @@ public class Node {
             e1.printStackTrace();
         } catch (IOException e1) {
             e1.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
         }
     }
 
