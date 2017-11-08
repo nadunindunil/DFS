@@ -16,6 +16,6 @@ public interface RMIServer extends Remote {
     void nodeLeaveRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException;
     void nodeLeaveOkRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException;
     void fileSearchRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException;
-    void fileSearchOkHandle() throws RemoteException;
+    void fileSearchOkHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException;
 
 }

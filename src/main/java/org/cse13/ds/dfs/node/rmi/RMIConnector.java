@@ -45,8 +45,8 @@ public class RMIConnector {
         rmiServer.nodeLeaveOkRequestHandle(rmiRequest);
     }
 
-    public void fileSearchOk() {
-
+    public void fileSearchOk(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiServer.fileSearchOkHandle(rmiRequest);
     }
 
 }
