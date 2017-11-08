@@ -1,6 +1,7 @@
 package org.cse13.ds.dfs.node.rmi;
 
 import org.cse13.ds.dfs.node.Node;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
@@ -17,7 +18,7 @@ public abstract class RMIRequest implements Serializable {
     private int toPort;
 
 
-    public RMIRequest(String fromIP, int fromPort, String toIP, int toPort){
+    public RMIRequest(String fromIP, int fromPort, String toIP, int toPort) {
 
         this.fromIP = fromIP;
         this.fromPort = fromPort;

@@ -94,9 +94,9 @@ public class Request {
         StringTokenizer st = new StringTokenizer(response, " ");
         String status = st.nextToken();
 
-        if (!Constants.UNROK.equals(status)) {
-            throw new IllegalStateException(Constants.UNROK + " not received");
-        }
+//        if (!Constants.UNROK.equals(status)) {
+//            throw new IllegalStateException(Constants.UNROK + " not received");
+//        }
 
         int code = Integer.parseInt(st.nextToken());
 

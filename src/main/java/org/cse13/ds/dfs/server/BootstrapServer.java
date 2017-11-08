@@ -7,19 +7,21 @@ import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import static org.cse13.ds.dfs.Constants.BOOTSERVER_PORT;
 
-public class BootstrapServer implements Runnable{
-    private static Thread t1,t2;
+
+public class BootstrapServer implements Runnable {
+    private static Thread t1, t2;
     DatagramSocket sock = null;
 
     public static void main(String args[]) {
-        BootstrapServer bs1=new BootstrapServer();
+        BootstrapServer bs1 = new BootstrapServer();
 
         //bs1.startServer();
     }
 
     @Override
-    public void run(){
+    public void run() {
         System.out.println("server thread is running...");
         this.startServer();
     }
@@ -29,14 +31,14 @@ public class BootstrapServer implements Runnable{
         System.out.println(msg);
     }
 
-    public BootstrapServer(){
+    public BootstrapServer() {
         try {
-            sock = new DatagramSocket(55555);
-        }catch(Exception e){
+            sock = new DatagramSocket(BOOTSERVER_PORT);
+        } catch (Exception e) {
             echo("crashed..");
         }
 
-        t1=new Thread(this);
+        t1 = new Thread(this);
         t1.start();
     }
 
@@ -61,11 +63,11 @@ public class BootstrapServer implements Runnable{
 
                 StringTokenizer st = new StringTokenizer(s, " ");
 
-                String length="",command="";
-                try{
+                String length = "", command = "";
+                try {
                     length = st.nextToken();
                     command = st.nextToken();
-                }catch(Exception e){
+                } catch (Exception e) {
 
                 }
 
@@ -146,10 +148,9 @@ public class BootstrapServer implements Runnable{
                     DatagramPacket dpReply = new DatagramPacket(reply.getBytes(), reply.getBytes().length,
                             incoming.getAddress(), incoming.getPort());
                     sock.send(dpReply);
-                }else if(command.equals("JOIN")){
+                } else if (command.equals("JOIN")) {
                     echo("join req came");
-                }
-                else{
+                } else {
                     // else returns the text where you can see and debug the code!
                     System.out.println("not something expected: " + command);
                 }

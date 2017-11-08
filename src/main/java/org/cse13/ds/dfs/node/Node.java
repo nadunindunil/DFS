@@ -18,51 +18,83 @@ import java.util.*;
 
 public class Node {
 
-    private final String ip_address;
-    private final int node_port;
+    private final String ipAddress;
+    private final int nodePort;
     private final String name;
     private List<Neighbour> MyNeighbours = new ArrayList<>();
 
     private BootstrapCommunicator bootstrapCommunicator = new BootstrapCommunicatorImpl();
 
     public Node(String ip_address) {
-        this.ip_address = ip_address;
-        this.node_port = getPort();
+        this.ipAddress = ip_address;
+        this.nodePort = generatePort();
         this.name = null;
     }
 
     public Node(String ip_address, String name) {
-        this.ip_address = ip_address;
-        this.node_port = getPort();
+        this.ipAddress = ip_address;
+        this.nodePort = generatePort();
         this.name = name;
     }
 
-    private int getPort() {
+    private int generatePort() {
         Random r = new Random();
         return Math.abs(r.nextInt()) % 6000 + 3000;
     }
 
-    public String getIp_address() {
-        return ip_address;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public int getNode_port() {
-        return node_port;
+    public int getNodePort() {
+        return nodePort;
     }
 
-    public void addNeighbour(Neighbour neighbour) {
+    public synchronized void addNeighbour(Neighbour neighbour) {
         this.MyNeighbours.add(neighbour);
         printNeighbours();
     }
 
-    public void removeNeighbour(String ipAddress, int port) {
+    public synchronized void removeNeighbour(String ipAddress, int port) {
+        List<Neighbour> remove = new ArrayList<Neighbour>();
         if (MyNeighbours.size() != 0) {
             for (Neighbour node : MyNeighbours) {
                 if (Objects.equals(node.getIp(), ipAddress) && node.getPort() == port) {
-                    MyNeighbours.remove(node);
+                    remove.add(node);
                 }
             }
+            MyNeighbours.removeAll(remove);
+            System.out.println("Print in remove neighbour");
+            printNeighbours();
         }
+    }
+
+    public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
+
+        if (nodeList != null){
+            for (Neighbour node : nodeList){
+                if (node.getPort() != this.nodePort){
+                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ipAddress, nodePort,node.getIp(),
+                            node.getPort()));
+                }
+
+            }
+        } else {
+            System.out.println("null in " + name);
+        }
+    }
+
+    private void gracefulDeparture() throws IOException, NotBoundException {
+        for (Neighbour node : MyNeighbours){
+            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ipAddress, nodePort,node.getIp(),
+                    node.getPort()));
+        }
+
+        MyNeighbours.clear();
+    }
+
+    private List<Neighbour> register() throws IOException, NotBoundException {
+        return bootstrapCommunicator.register(ipAddress, nodePort, name);
     }
 
     private void printNeighbours() {
@@ -75,14 +107,15 @@ public class Node {
 
         List<Neighbour> nodeList = register();
 
-        System.setProperty("java.rmi.server.hostname", this.getIp_address());
+        System.setProperty("java.rmi.server.hostname", this.getIpAddress());
         try {
             Registry registry = null;
             try {
-                registry = LocateRegistry.createRegistry(this.getNode_port());
+                registry = LocateRegistry.createRegistry(this.getNodePort());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            if (registry == null) throw new AssertionError();
             registry.rebind("RMIServer", new RMIServerImpl(this));
             System.out.println("Server is Starting...");
 
@@ -92,45 +125,20 @@ public class Node {
 
         connect(nodeList);
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    gracefulDeparture();
-                    bootstrapCommunicator.unregister(ip_address, node_port, name);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (NotBoundException e) {
-                    e.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                gracefulDeparture();
+                bootstrapCommunicator.unregister(ipAddress, nodePort, name);
+                Thread.sleep(4000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
-    }
-
-    public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
-
-        if (nodeList != null){
-            for (Neighbour node : nodeList){
-                if (node.getPort() != this.node_port){
-                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),
-                            node.getPort()));
-                }
-
-            }
-        } else {
-            System.out.println("null in " + name);
-        }
-    }
-
-    private void gracefulDeparture() throws IOException, NotBoundException {
-        for (Neighbour node : MyNeighbours){
-            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ip_address,node_port,node.getIp(),
-                    node.getPort()));
-        }
-    }
-
-    private List<Neighbour> register() throws IOException, NotBoundException {
-        return bootstrapCommunicator.register(ip_address, node_port, name);
     }
 
     //read keyboard input
@@ -143,9 +151,9 @@ public class Node {
                 if (outMessage.contains("ser")) {
                     System.out.println("AAAA");
                     for (Neighbour node : MyNeighbours) {
-                        if (node.getPort() != this.node_port) {
+                        if (node.getPort() != this.nodePort) {
                             System.out.println("BBBB");
-                            node.rmiConnector.fileSearchRequest(new RMIFileSearchRequest("Test.txt", 3, ip_address,node_port,node.getIp(),
+                            node.rmiConnector.fileSearchRequest(new RMIFileSearchRequest("Test.txt", 3, ipAddress, nodePort,node.getIp(),
                                     node.getPort()));
                         }
                     }
