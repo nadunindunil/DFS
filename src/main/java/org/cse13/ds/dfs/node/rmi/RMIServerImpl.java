@@ -43,12 +43,11 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
 
     @Override
     public void fileSearchRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
-        System.out.println("YEEEIIII");
         rmiRequest.handle(this.node);
     }
 
     @Override
-    public void fileSearchOkHandle() {
-
+    public void fileSearchOkHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiRequest.handle(this.node);
     }
 }
