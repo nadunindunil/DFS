@@ -25,20 +25,20 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
     }
 
     @Override
-    public void nodeLeaveRequestHandle() {
-
-    }
-
-    @Override
     public void nodeJoinOkRequestHandle(RMIRequest rmiRequest) throws RemoteException, MalformedURLException,
             NotBoundException {
         rmiRequest.handle(this.node);
     }
 
+    @Override
+    public void nodeLeaveRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiRequest.handle(this.node);
+    }
+
 
     @Override
-    public void nodeLeaveOkRequestHandle() {
-
+    public void nodeLeaveOkRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiRequest.handle(this.node);
     }
 
     @Override

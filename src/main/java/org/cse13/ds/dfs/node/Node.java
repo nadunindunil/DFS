@@ -1,5 +1,9 @@
 package org.cse13.ds.dfs.node;
 
+import org.cse13.ds.dfs.node.rmi.RMIFileSearchRequest;
+import org.cse13.ds.dfs.node.rmi.RMIJoinRequest;
+import org.cse13.ds.dfs.node.rmi.RMILeaveRequest;
+import org.cse13.ds.dfs.node.rmi.RMIServerImpl;
 import org.cse13.ds.dfs.node.rmi.*;
 import org.cse13.ds.dfs.node.utils.BootstrapCommunicator;
 
@@ -110,6 +114,8 @@ public class Node {
                     bootstrapCommunicator.unregister(ip_address, node_port, name);
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (NotBoundException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -131,9 +137,10 @@ public class Node {
         }
     }
 
-    private void gracefulDeparture() throws IOException {
+    private void gracefulDeparture() throws IOException, NotBoundException {
         for (Neighbour node : MyNeighbours){
-            // TODO
+            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ip_address,node_port,node.getIp(),
+                    node.getPort()));
         }
     }
 
