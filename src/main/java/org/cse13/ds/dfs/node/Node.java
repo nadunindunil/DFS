@@ -1,5 +1,6 @@
 package org.cse13.ds.dfs.node;
 
+import com.sun.java_cup.internal.runtime.Scanner;
 import org.cse13.ds.dfs.node.rmi.RMIFileSearchRequest;
 import org.cse13.ds.dfs.node.rmi.RMIJoinRequest;
 import org.cse13.ds.dfs.node.rmi.RMILeaveRequest;
@@ -18,6 +19,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Node {
 
@@ -80,11 +85,11 @@ public class Node {
 
     public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
 
-        if (nodeList != null){
-            for (Neighbour node : nodeList){
-                if (node.getPort() != this.nodePort){
-                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ipAddress, nodePort,node.getIp(),
-                            node.getPort()));
+        if (nodeList != null) {
+            for (Neighbour node : nodeList) {
+                if (node.getPort() != this.nodePort) {
+                    node.rmiConnector
+                            .nodeJoinRequest(new RMIJoinRequest(ipAddress, nodePort, node.getIp(), node.getPort()));
                 }
 
             }
@@ -94,9 +99,8 @@ public class Node {
     }
 
     private void gracefulDeparture() throws IOException, NotBoundException {
-        for (Neighbour node : MyNeighbours){
-            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ipAddress, nodePort,node.getIp(),
-                    node.getPort()));
+        for (Neighbour node : MyNeighbours) {
+            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ipAddress, nodePort, node.getIp(), node.getPort()));
         }
 
         MyNeighbours.clear();
@@ -127,7 +131,8 @@ public class Node {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            if (registry == null) throw new AssertionError();
+            if (registry == null)
+                throw new AssertionError();
             registry.rebind("RMIServer", new RMIServerImpl(this));
             System.out.println("Server is Starting...");
 
@@ -162,15 +167,17 @@ public class Node {
 
                 if (outMessage.contains("ser")) {
                     ArrayList<String> searchResults = searchFiles(outMessage.split(" ")[1]); //search file in the own directory
-                    if(searchResults.size() > 0) {
+                    if (searchResults.size() > 0) {
                         System.out.println("File Found in My Node");
                     } else {
                         //check whether filename is already included in previous search results
                         String[] ownersDetailsOfFiles = searchPreviousSearchResults(outMessage.split(" ")[1]);
                         if (ownersDetailsOfFiles != null) {
                             //forward request to owner
-                            System.out.println("File found from previous searched results. Request is forwarded directly to the owner.");
-                            forwardFileSearchRequestToOwner(outMessage.split(" ")[1], 3, ownersDetailsOfFiles[0], Integer.parseInt(ownersDetailsOfFiles[1]), ipAddress, nodePort);
+                            System.out.println(
+                                    "File found from previous searched results. Request is forwarded directly to the owner.");
+                            forwardFileSearchRequestToOwner(outMessage.split(" ")[1], 3, ownersDetailsOfFiles[0],
+                                    Integer.parseInt(ownersDetailsOfFiles[1]), ipAddress, nodePort);
                         } else {
                             forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort); //forward request to a neighbour
                         }
@@ -190,8 +197,28 @@ public class Node {
 
     //Randomly pick two files from the file list.
     public void initializeFiles() {
-
         HashMap<String, File> allFiles = new HashMap<String, File>();
+
+        // File name text to list
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            File file = new File(classLoader.getResource("file/FileNames.txt").getFile());
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line);
+                stringBuffer.append("\n");
+                allFiles.put(line,new File(line));
+            }
+            fileReader.close();
+            System.out.println("Contents of file:");
+            System.out.println(stringBuffer.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         allFiles.put("Lord_of_the_Rings", new File("G:\\Films\\LR\\Lord_of_the_Rings.mov"));
         allFiles.put("Harry_Porter_1", new File("G:\\Films\\HP\\Harry_Porter_1.mov"));
         allFiles.put("Fast_and_Furious", new File("G:\\Films\\FF\\Fast_and_Furious.mov"));
@@ -240,15 +267,18 @@ public class Node {
     }
 
     //send to owner of files to double check the existence of the file
-    public void forwardFileSearchRequestToOwner(String fileNameToSearch, int hops, String ownerIP, int ownerPort, String originatorIP, int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
+    public void forwardFileSearchRequestToOwner(String fileNameToSearch, int hops, String ownerIP, int ownerPort,
+                                                String originatorIP, int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
         Neighbour n = new Neighbour(ownerIP, ownerPort);
-        if(n != null) {
-            n.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress, nodePort, ownerIP, ownerPort, originatorIP ,originatorPort));
+        if (n != null) {
+            n.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress, nodePort,
+                    ownerIP, ownerPort, originatorIP, originatorPort));
         }
     }
 
     //send file search request to neighbours
-    public void forwardFileSearchRequest(String fileNameToSearch, int hops, String originatorIP, int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
+    public void forwardFileSearchRequest(String fileNameToSearch, int hops, String originatorIP, int originatorPort)
+            throws RemoteException, NotBoundException, MalformedURLException {
         //select random neighbour to forward request
         Random r = new Random();
         Neighbour randomSuccessor = null;
@@ -263,13 +293,13 @@ public class Node {
         }
 
         System.out.println("File Couldn't found & File Search Request forwarded");
-        randomSuccessor.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress,nodePort,
-                randomSuccessor.getIp(),
-                randomSuccessor.getPort(), originatorIP, originatorPort));
+        randomSuccessor.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress,
+                nodePort, randomSuccessor.getIp(), randomSuccessor.getPort(), originatorIP, originatorPort));
     }
 
     //send search results to query originator
-    public void forwardFileSearchOKResponse(ArrayList<String> searchResults, int hops, String originatorIP, int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
+    public void forwardFileSearchOKResponse(ArrayList<String> searchResults, int hops, String originatorIP,
+                                            int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
         Random r = new Random();
         Neighbour randomSuccessor = null;
 
@@ -281,12 +311,12 @@ public class Node {
                 break;
             }
         }
-        System.out.println(originatorIP+" "+originatorPort);
-        System.out.println(randomSuccessor.getIp()+" "+randomSuccessor.getPort());
+        System.out.println(originatorIP + " " + originatorPort);
+        System.out.println(randomSuccessor.getIp() + " " + randomSuccessor.getPort());
 
         Neighbour n = new Neighbour(originatorIP, originatorPort);
-        n.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP,
-                originatorPort, searchResults, hops, ipAddress, nodePort));
+        n.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP, originatorPort,
+                searchResults, hops, ipAddress, nodePort));
     }
 
     //save searchedResults
@@ -295,14 +325,14 @@ public class Node {
         boolean isExist = false;
 
         //check whether filename exists already ;
-        for(String key: keysAsArray) {
-            if(key.equals(filename)){
+        for (String key : keysAsArray) {
+            if (key.equals(filename)) {
                 isExist = true;
             }
         }
 
         //save search results
-        if(!isExist) {
+        if (!isExist) {
             searchedResults.put(filename, new String[]{ip, String.valueOf(port)});
         }
 
