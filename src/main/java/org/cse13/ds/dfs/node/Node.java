@@ -198,7 +198,6 @@ public class Node {
         allFiles.put("La_La_Land", new File("G:\\Films\\LR\\La_La_Land.mov"));
         allFiles.put("Transformers", new File("G:\\Films\\Transformers\\Transformers.mov"));
         allFiles.put("Spider_Man_1", new File("G:\\Films\\SP\\Spider_Man_1.mov"));
-        allFiles.put("XXX", new File("G:\\Films\\XXX\\XXX.mov"));
 
         //generate 3 random indices to pick files from hashmap
         int[] randomIndices = new Random().ints(1, 6).distinct().limit(3).toArray();
