@@ -31,6 +31,9 @@ public class Node {
     //to store files
     private HashMap<String, File> filesToStore = new HashMap<String, File>();
 
+    //to keep extra info about files stored in other nodes
+    private HashMap<String, String[]> searchedResults = new HashMap<String, String[]>();
+
     //to send fileOKresponse
     RMIConnector rmiConnector;
 
@@ -72,9 +75,6 @@ public class Node {
                     remove.add(node);
                 }
             }
-            MyNeighbours.removeAll(remove);
-            System.out.println("Print in remove neighbour");
-            printNeighbours();
         }
     }
 
@@ -164,9 +164,16 @@ public class Node {
                     ArrayList<String> searchResults = searchFiles(outMessage.split(" ")[1]); //search file in the own directory
                     if(searchResults.size() > 0) {
                         System.out.println("File Found in My Node");
-//                        forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort);
                     } else {
-                        forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort);
+                        //check whether filename is already included in previous search results
+                        String[] ownersDetailsOfFiles = searchPreviousSearchResults(outMessage.split(" ")[1]);
+                        if (ownersDetailsOfFiles != null) {
+                            //forward request to owner
+                            System.out.println("File found from previous searched results. Request is forwarded directly to the owner.");
+                            forwardFileSearchRequestToOwner(outMessage.split(" ")[1], 3, ownersDetailsOfFiles[0], Integer.parseInt(ownersDetailsOfFiles[1]), ipAddress, nodePort);
+                        } else {
+                            forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort); //forward request to a neighbour
+                        }
                     }
                 } else {
                     System.out.println("null in " + name);
@@ -212,13 +219,33 @@ public class Node {
         ArrayList<String> searchResults = new ArrayList<String>();
 
         for (String fileNames : filesToStore.keySet()) {
-            System.out.println(fileNames+" "+fileNameToSearch);
             if (fileNames.contains(fileNameToSearch)) {
                 searchResults.add(fileNames);
             }
         }
 
         return searchResults;
+    }
+
+    public String[] searchPreviousSearchResults(String fileNameToSearch) {
+        //search files in previous search results
+        String[] ownerDetails = null;
+
+        for (String fileNames : searchedResults.keySet()) {
+            if (fileNames.contains(fileNameToSearch)) {
+                ownerDetails = searchedResults.get(fileNames);
+            }
+        }
+
+        return ownerDetails;
+    }
+
+    //send to owner of files to double check the existence of the file
+    public void forwardFileSearchRequestToOwner(String fileNameToSearch, int hops, String ownerIP, int ownerPort, String originatorIP, int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
+        Neighbour n = new Neighbour(ownerIP, ownerPort);
+        if(n != null) {
+            n.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress, nodePort, ownerIP, ownerPort, originatorIP ,originatorPort));
+        }
     }
 
     //send file search request to neighbours
@@ -255,8 +282,31 @@ public class Node {
                 break;
             }
         }
-        randomSuccessor.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP,
+        System.out.println(originatorIP+" "+originatorPort);
+        System.out.println(randomSuccessor.getIp()+" "+randomSuccessor.getPort());
+
+        Neighbour n = new Neighbour(originatorIP, originatorPort);
+        n.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP,
                 originatorPort, searchResults, hops, ipAddress, nodePort));
+    }
+
+    //save searchedResults
+    public void saveSearchedResults(String filename, String ip, int port) {
+        ArrayList<String> keysAsArray = new ArrayList<String>(searchedResults.keySet());
+        boolean isExist = false;
+
+        //check whether filename exists already ;
+        for(String key: keysAsArray) {
+            if(key.equals(filename)){
+                isExist = true;
+            }
+        }
+
+        //save search results
+        if(!isExist) {
+            searchedResults.put(filename, new String[]{ip, String.valueOf(port)});
+        }
+
     }
 
 }
