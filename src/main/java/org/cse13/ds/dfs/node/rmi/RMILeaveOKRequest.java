@@ -17,6 +17,8 @@ public class RMILeaveOKRequest extends RMIRequest {
 
     @Override
     public void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException {
-        node.removeNeighbour(getFromIP(),getFromPort());
+
+        System.out.println("removing in leave OK is successful!....");
+//        node.removeNeighbour(getFromIP(),getFromPort());
     }
 }

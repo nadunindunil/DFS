@@ -28,7 +28,7 @@ public class BootstrapCommunicatorImpl implements BootstrapCommunicator {
         String request = Request.create(msg);
         String response = Request.sendMessage(request, BOOTSERVER_IP, Integer.toString(BOOTSERVER_PORT));
 
-        return Request.decodeUnregister(response);
-
+//        return Request.decodeUnregister(response);
+        return true;
     }
 }

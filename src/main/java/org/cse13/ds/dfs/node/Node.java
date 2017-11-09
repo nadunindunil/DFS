@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramPacket;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -22,8 +21,8 @@ import java.util.*;
 
 public class Node {
 
-    private final String ip_address;
-    private final int node_port;
+    private final String ipAddress;
+    private final int nodePort;
     private final String name;
     private List<Neighbour> MyNeighbours = new ArrayList<>();
 
@@ -39,45 +38,72 @@ public class Node {
     RMIConnector rmiConnector;
 
     public Node(String ip_address) throws RemoteException, NotBoundException, MalformedURLException {
-        this.ip_address = ip_address;
-        this.node_port = getPort();
+        this.ipAddress = ip_address;
+        this.nodePort = generatePort();
         this.name = null;
-        //this.rmiConnector = new RMIConnector(ip_address, node_port);
     }
 
     public Node(String ip_address, String name) throws RemoteException, NotBoundException, MalformedURLException {
-        this.ip_address = ip_address;
-        this.node_port = getPort();
+        this.ipAddress = ip_address;
+        this.nodePort = generatePort();
         this.name = name;
-        //this.rmiConnector = new RMIConnector(ip_address, node_port);
     }
 
-    private int getPort() {
+    private int generatePort() {
         Random r = new Random();
         return Math.abs(r.nextInt()) % 6000 + 3000;
     }
 
-    public String getIp_address() {
-        return ip_address;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public int getNode_port() {
-        return node_port;
+    public int getNodePort() {
+        return nodePort;
     }
 
-    public void addNeighbour(Neighbour neighbour) {
+    public synchronized void addNeighbour(Neighbour neighbour) {
         this.MyNeighbours.add(neighbour);
         printNeighbours();
     }
 
-    public void removeNeighbour(String ipAddress, int port) {
+    public synchronized void removeNeighbour(String ipAddress, int port) {
+        List<Neighbour> remove = new ArrayList<Neighbour>();
         if (MyNeighbours.size() != 0) {
             for (Neighbour node : MyNeighbours) {
                 if (Objects.equals(node.getIp(), ipAddress) && node.getPort() == port) {
-                    MyNeighbours.remove(node);
+                    remove.add(node);
                 }
             }
         }
+    }
+
+    public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
+
+        if (nodeList != null){
+            for (Neighbour node : nodeList){
+                if (node.getPort() != this.nodePort){
+                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ipAddress, nodePort,node.getIp(),
+                            node.getPort()));
+                }
+
+            }
+        } else {
+            System.out.println("null in " + name);
+        }
+    }
+
+    private void gracefulDeparture() throws IOException, NotBoundException {
+        for (Neighbour node : MyNeighbours){
+            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ipAddress, nodePort,node.getIp(),
+                    node.getPort()));
+        }
+
+        MyNeighbours.clear();
+    }
+
+    private List<Neighbour> register() throws IOException, NotBoundException {
+        return bootstrapCommunicator.register(ipAddress, nodePort, name);
     }
 
     private void printNeighbours() {
@@ -93,14 +119,15 @@ public class Node {
 
         List<Neighbour> nodeList = register();
 
-        System.setProperty("java.rmi.server.hostname", this.getIp_address());
+        System.setProperty("java.rmi.server.hostname", this.getIpAddress());
         try {
             Registry registry = null;
             try {
-                registry = LocateRegistry.createRegistry(this.getNode_port());
+                registry = LocateRegistry.createRegistry(this.getNodePort());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            if (registry == null) throw new AssertionError();
             registry.rebind("RMIServer", new RMIServerImpl(this));
             System.out.println("Server is Starting...");
 
@@ -110,45 +137,20 @@ public class Node {
 
         connect(nodeList);
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    gracefulDeparture();
-                    bootstrapCommunicator.unregister(ip_address, node_port, name);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (NotBoundException e) {
-                    e.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                gracefulDeparture();
+                bootstrapCommunicator.unregister(ipAddress, nodePort, name);
+                Thread.sleep(4000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
-    }
-
-    public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
-
-        if (nodeList != null){
-            for (Neighbour node : nodeList){
-                if (node.getPort() != this.node_port){
-                    node.rmiConnector.nodeJoinRequest(new RMIJoinRequest(ip_address,node_port,node.getIp(),
-                            node.getPort()));
-                }
-
-            }
-        } else {
-            System.out.println("null in " + name);
-        }
-    }
-
-    private void gracefulDeparture() throws IOException, NotBoundException {
-        for (Neighbour node : MyNeighbours){
-            node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ip_address,node_port,node.getIp(),
-                    node.getPort()));
-        }
-    }
-
-    private List<Neighbour> register() throws IOException, NotBoundException {
-        return bootstrapCommunicator.register(ip_address, node_port, name);
     }
 
     //read keyboard input
@@ -168,9 +170,9 @@ public class Node {
                         if (ownersDetailsOfFiles != null) {
                             //forward request to owner
                             System.out.println("File found from previous searched results. Request is forwarded directly to the owner.");
-                            forwardFileSearchRequestToOwner(outMessage.split(" ")[1], 3, ownersDetailsOfFiles[0], Integer.parseInt(ownersDetailsOfFiles[1]), ip_address, node_port);
+                            forwardFileSearchRequestToOwner(outMessage.split(" ")[1], 3, ownersDetailsOfFiles[0], Integer.parseInt(ownersDetailsOfFiles[1]), ipAddress, nodePort);
                         } else {
-                            forwardFileSearchRequest(outMessage.split(" ")[1], 3, ip_address, node_port); //forward request to a neighbour
+                            forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort); //forward request to a neighbour
                         }
                     }
                 } else {
@@ -240,9 +242,9 @@ public class Node {
 
     //send to owner of files to double check the existence of the file
     public void forwardFileSearchRequestToOwner(String fileNameToSearch, int hops, String ownerIP, int ownerPort, String originatorIP, int originatorPort) throws RemoteException, NotBoundException, MalformedURLException {
-        Neighbour neighbourWithRMIConnector = MyNeighbours.get(0);
-        if(neighbourWithRMIConnector != null) {
-            neighbourWithRMIConnector.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ip_address,node_port, ownerIP, ownerPort, originatorIP ,originatorPort));
+        Neighbour n = new Neighbour(ownerIP, ownerPort);
+        if(n != null) {
+            n.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress, nodePort, ownerIP, ownerPort, originatorIP ,originatorPort));
         }
     }
 
@@ -256,13 +258,14 @@ public class Node {
             randomSuccessor = MyNeighbours.get(r.nextInt(MyNeighbours.size()));
             //check whether selected node is equal to myself.
             //TODO: check the ip also
-            if (randomSuccessor.getPort() != this.node_port) {
+            if (randomSuccessor.getPort() != this.nodePort) {
                 break;
             }
         }
 
         System.out.println("File Couldn't found & File Search Request forwarded");
-        randomSuccessor.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ip_address,node_port,randomSuccessor.getIp(),
+        randomSuccessor.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress,nodePort,
+                randomSuccessor.getIp(),
                 randomSuccessor.getPort(), originatorIP, originatorPort));
     }
 
@@ -275,11 +278,16 @@ public class Node {
             randomSuccessor = MyNeighbours.get(r.nextInt(MyNeighbours.size()));
             //check whether selected node is equal to myself.
             //TODO: check the ip also
-            if (randomSuccessor.getPort() != this.node_port) {
+            if (randomSuccessor.getPort() != this.nodePort) {
                 break;
             }
         }
-        randomSuccessor.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ip_address, node_port, originatorIP, originatorPort, searchResults, hops, ip_address, node_port));
+        System.out.println(originatorIP+" "+originatorPort);
+        System.out.println(randomSuccessor.getIp()+" "+randomSuccessor.getPort());
+
+        Neighbour n = new Neighbour(originatorIP, originatorPort);
+        n.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP,
+                originatorPort, searchResults, hops, ipAddress, nodePort));
     }
 
     //save searchedResults
