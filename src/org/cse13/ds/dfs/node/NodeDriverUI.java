@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.cse13.ds.dfs.server.BootstrapServer;
 
@@ -30,14 +31,24 @@ public class NodeDriverUI extends javax.swing.JFrame {
     public NodeDriverUI() {
         initComponents();
     }
-
+    
+    public void infoBox(String infoMessage, String titleBar)
+    {
+        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
+    }
     public void setSearchResults(ArrayList<String[]> searchResults) {
         //display file names
-        DefaultListModel resultsList = new DefaultListModel();
-        for (String[] result : searchResults) {
-            resultsList.addElement(result[0]+" "+result[1]+" "+result[2]);
+        if (searchResults != null) {
+            DefaultListModel resultsList = new DefaultListModel();
+            for (String[] result : searchResults) {
+                resultsList.addElement(result[0] + " " + result[1] + " " + result[2]);
+            }
+            searchResultsList.setModel(resultsList);
+        } else {
+            //infoBox("Search file couldnt found!", "Error");
+            JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.");
         }
-        searchResultsList.setModel(resultsList);
+
     }
 
     /**
@@ -59,6 +70,8 @@ public class NodeDriverUI extends javax.swing.JFrame {
         initFileList1 = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Distributed p2p Filesystem");
+        setSize(new java.awt.Dimension(630, 360));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton1.setText("Start Node");
