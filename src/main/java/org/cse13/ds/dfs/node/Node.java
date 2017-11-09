@@ -164,7 +164,7 @@ public class Node {
                     ArrayList<String> searchResults = searchFiles(outMessage.split(" ")[1]); //search file in the own directory
                     if(searchResults.size() > 0) {
                         System.out.println("File Found in My Node");
-                        forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort);
+//                        forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort);
                     } else {
                         forwardFileSearchRequest(outMessage.split(" ")[1], 3, ipAddress, nodePort);
                     }
