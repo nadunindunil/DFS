@@ -35,6 +35,7 @@ public class RMIFileSearchOKResponse extends RMIRequest {
         System.out.println("Files Found-----------------");
         for(String searchResult: searchResults) {
             System.out.println(searchResult);
+            node.saveSearchedResults(searchResult, ownerIP, ownerPort); //save searched results future lookups
         }
     }
 }
