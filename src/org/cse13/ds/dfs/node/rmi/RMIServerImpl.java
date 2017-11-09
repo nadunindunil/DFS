@@ -3,6 +3,7 @@ package org.cse13.ds.dfs.node.rmi;
 import org.cse13.ds.dfs.node.Node;
 
 import java.net.MalformedURLException;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -48,6 +49,16 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
 
     @Override
     public void fileSearchOkHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiRequest.handle(this.node);
+    }
+
+    @Override
+    public void nodeHBSendRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException, ConnectException {
+        rmiRequest.handle(this.node);
+    }
+
+    @Override
+    public void nodeHBSendOkRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException, ConnectException{
         rmiRequest.handle(this.node);
     }
 }

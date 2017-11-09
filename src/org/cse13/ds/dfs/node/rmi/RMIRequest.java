@@ -4,6 +4,7 @@ import org.cse13.ds.dfs.node.Node;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -43,5 +44,5 @@ public abstract class RMIRequest implements Serializable {
         return toPort;
     }
 
-    public abstract void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException;
+    public abstract void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException, ConnectException;
 }

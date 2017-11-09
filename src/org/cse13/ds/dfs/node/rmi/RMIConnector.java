@@ -1,6 +1,7 @@
 package org.cse13.ds.dfs.node.rmi;
 
 import java.net.MalformedURLException;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -47,6 +48,14 @@ public class RMIConnector {
 
     public void fileSearchOk(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
         rmiServer.fileSearchOkHandle(rmiRequest);
+    }
+    
+    public void nodeHBSendRequest(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException, ConnectException {
+        rmiServer.nodeHBSendRequestHandle(rmiRequest);
+    }
+    
+    public void nodeHBSendOKRequest(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException, ConnectException {
+        rmiServer.nodeHBSendOkRequestHandle(rmiRequest);
     }
 
 }
