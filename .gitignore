@@ -1,4 +1,4 @@
 .idea/
 target/
 build/
-*.classes
+*.class

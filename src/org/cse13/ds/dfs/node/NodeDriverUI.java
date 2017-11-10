@@ -32,12 +32,15 @@ public class NodeDriverUI extends javax.swing.JFrame {
     }
 
     public void setSearchResults(ArrayList<String[]> searchResults) {
-        //display file names
-        DefaultListModel resultsList = new DefaultListModel();
+        //display results
+        DefaultTableModel dtm = new DefaultTableModel(0, 0);
+        String header[] = new String[]{"File Names", "Owner IP", "Owner Port"};
+        dtm.setColumnIdentifiers(header);
+        resultsFilesTable.setModel(dtm);
+
         for (String[] result : searchResults) {
-            resultsList.addElement(result[0]+" "+result[1]+" "+result[2]);
+            dtm.addRow(new String[]{result[0], result[1], result[2]});
         }
-        searchResultsList.setModel(resultsList);
     }
 
     /**
@@ -54,12 +57,10 @@ public class NodeDriverUI extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         searchBox = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        searchResultsList = new javax.swing.JList();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        initFileList1 = new javax.swing.JList();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        initFilesTable = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        resultsFilesTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Distributed p2p filesystem");
@@ -73,7 +74,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, 32));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 100, 32));
 
         jButton2.setText("Start BS");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -82,7 +83,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 100, 32));
-        jPanel1.add(searchBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 270, 40));
+        jPanel1.add(searchBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 30, 510, 30));
 
         jButton3.setText("Search");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -90,30 +91,47 @@ public class NodeDriverUI extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 80, 270, 30));
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 70, 510, 30));
 
-        jScrollPane1.setViewportView(searchResultsList);
-
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, 260, 150));
-
-        jScrollPane2.setViewportView(initFileList1);
-
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 260, 150));
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        initFilesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2"
+                "File Name", "Owner IP", "Owner Port"
             }
-        ));
-        jScrollPane3.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
 
-        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 320, 380, 130));
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(initFilesTable);
+
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 650, 130));
+
+        resultsFilesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "File Name", "Path"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(resultsFilesTable);
+
+        jPanel1.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 650, 130));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 720, 500));
 
@@ -135,12 +153,15 @@ public class NodeDriverUI extends javax.swing.JFrame {
             });
 
             //display file names
-            DefaultListModel initFileList = new DefaultListModel();
             ArrayList<String> keysAsArray = new ArrayList<String>(n1.getFilesToStore().keySet());
+            DefaultTableModel dtm = new DefaultTableModel(0, 0);
+            String header[] = new String[]{"File Names", "File Paths"};
+            dtm.setColumnIdentifiers(header);
+            initFilesTable.setModel(dtm);
+
             for (String files : keysAsArray) {
-                initFileList.addElement(files + " " + n1.getFilesToStore().get(files));
+                dtm.addRow(new String[]{files, n1.getFilesToStore().get(files).getPath()});
             }
-            initFileList1.setModel(initFileList);
 
             stdReadThread.start();        // TODO add your handling code here:
         } catch (RemoteException ex) {
@@ -198,16 +219,14 @@ public class NodeDriverUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList initFileList1;
+    private javax.swing.JTable initFilesTable;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTable resultsFilesTable;
     private javax.swing.JTextField searchBox;
-    private javax.swing.JList searchResultsList;
     // End of variables declaration//GEN-END:variables
 }
