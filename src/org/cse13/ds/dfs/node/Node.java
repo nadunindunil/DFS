@@ -215,22 +215,32 @@ public class Node {
 
             System.out.println("inside hashmap function, length: " + MyNeighbourHeartBeats.size());
 
-            MyNeighbourHeartBeats.forEach((index, value) -> {
-                System.out.println(index + ", " + value);
-                if (value < -5) {
-                    try {
-                        // heartbeat has been lost for three times!!!
-                        removeNeighbour(index.getIp(), index.getPort());
-                        removeHeartBeater(index.getIp(), index.getPort());
-                        System.out.println("removing node :" + index.getPort() + " from system");
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            if (MyNeighbourHeartBeats.size() > 0) {
+                MyNeighbourHeartBeats.forEach((index, value) -> {
+                    System.out.println(index + ", " + value);
+                    if (value < -4) {
+                        try {
+                            // heartbeat has been lost for three times!!!
+                            removeNeighbour(index.getIp(), index.getPort());
+                            removeHeartBeater(index.getIp(), index.getPort());
+                            System.out.println("removing node :" + index.getPort() + " from system");
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        System.out.println("decreasing 1 from node, value: " + value);
+                        MyNeighbourHeartBeats.put(index, MyNeighbourHeartBeats.get(index) - 1);
                     }
-                } else {
-                    System.out.println("decreasing 1 from node, value: " + value);
-                    MyNeighbourHeartBeats.put(index, MyNeighbourHeartBeats.get(index) - 1);
+                });
+            } else {
+                // hbt neigbour list 0 action   -- empty neighbour list
+                try {
+                    bootstrapCommunicator.unregister(this.ipAddress, this.nodePort, this.name);
+                    start();
+                } catch (Exception e) {
+
                 }
-            });
+            }
         }
     }
 
@@ -244,6 +254,9 @@ public class Node {
                 }
             }
             MyNeighbourHeartBeats.remove(neighbour);
+            if (MyNeighbourHeartBeats.size() == 0) {
+                System.out.println("empty neighour list");
+            }
         }
     }
 
