@@ -69,7 +69,7 @@ public class Node {
 
         //persist current IPs & ports to a file
         try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("mydetails.txt", true)));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("mydetailsf", true)));
             out.println(this.ipAddress + " " + this.nodePort);
             out.close();
         } catch (IOException e) {
@@ -432,10 +432,48 @@ public class Node {
         allFiles.put("La_La_Land", new File("G:\\Films\\LR\\La_La_Land.mov"));
         allFiles.put("Transformers", new File("G:\\Films\\Transformers\\Transformers.mov"));
         allFiles.put("Spider_Man_1", new File("G:\\Films\\SP\\Spider_Man_1.mov"));
-        allFiles.put("XXX", new File("G:\\Films\\XXX\\XXX.mov"));
+        allFiles.put("abc", new File("G:\\Films\\abc\\abc.mov"));
+        
+                // The name of the file to open.
+        String fileName = "FileNames.txt";
+
+        // This will reference one line at a time
+        String line = null;
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader = 
+                new FileReader(fileName);
+            
+            System.out.println(fileReader);
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader = 
+                new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                //System.out.println(line);
+                allFiles.put(line,new File(line));
+            }   
+
+            // Always close files.
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");                
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");                  
+            // Or we could just do this: 
+            // ex.printStackTrace();
+        }
+    
 
         //generate 3 random indices to pick files from hashmap
-        int[] randomIndices = new Random().ints(1, 6).distinct().limit(3).toArray();
+        int[] randomIndices = new Random().ints(1, allFiles.size()).distinct().limit(3).toArray();
 
         System.out.println("Initiated Files-----------------------");
         //pick files randomly
