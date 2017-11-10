@@ -36,7 +36,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
     public void setSearchResults(ArrayList<String[]> searchResults) {
         endTime = System.nanoTime() - startTime;
         System.out.println(startTime + " " + System.currentTimeMillis());
-        elapsedTimeLabel.setText(String.valueOf(endTime));
+        elapsedTimeLabel.setText(String.valueOf(endTime/1000)+" micro seconds");
         //display results
         DefaultTableModel dtm = new DefaultTableModel(0, 0);
         String header[] = new String[]{"File Names", "Owner IP", "Owner Port"};
@@ -58,7 +58,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
     public void setMyNeighboursDetails(String ip, String port) {
         DefaultTableModel dtm = (DefaultTableModel) myNeighboursTable.getModel();
         int currentRowCount = dtm.getRowCount();
-        if(currentRowCount<3) {
+        if(currentRowCount<5) {
             dtm.addRow(new String[]{"Neighbour " + (currentRowCount + 1), ip, port});
         }
         
@@ -73,6 +73,27 @@ public class NodeDriverUI extends javax.swing.JFrame {
             public void run() {
                 int dialogButton = JOptionPane.YES_NO_OPTION;
                 int dialogResult = JOptionPane.showConfirmDialog(ui, "File Not Found. Do you want to search again?", "File Not Found", dialogButton);
+                if (dialogResult == 0) {
+                    startTime = System.nanoTime();
+                    n1.searchInUI(searchBox.getText());
+                } else {
+                    System.out.println("No Option");
+                }
+                
+            }
+        }).start();
+
+    }
+    
+    //show message
+    public void showMessageAlreadyIn() {
+        NodeDriverUI ui = this;
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int dialogResult = JOptionPane.showConfirmDialog(ui, "File found on your pc!!!", "File Not Found", dialogButton);
                 if (dialogResult == 0) {
                     startTime = System.nanoTime();
                     n1.searchInUI(searchBox.getText());

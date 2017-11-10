@@ -19,7 +19,7 @@ public class RMILeaveRequest extends RMIRequest {
     @Override
     public void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException {
 
-        System.out.println("Removing......");
+        System.out.println("Removing in leave request......");
 
         Neighbour neighbour = new Neighbour(getFromIP(),getFromPort(), (float)0.0);
         node.removeNeighbour(getFromIP(),getFromPort());

@@ -2,26 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="26ee196b-1aa4-4dbf-a91a-6bc549e10e1b" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/Node.class" afterPath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/Node.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI$4.class" afterPath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI$4.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI$5.class" afterPath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI$5.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI.class" afterPath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI.form" afterPath="$PROJECT_DIR$/build/classes/org/cse13/ds/dfs/node/NodeDriverUI.form" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dfs.iml" afterPath="$PROJECT_DIR$/dfs.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mydetails.txt" afterPath="$PROJECT_DIR$/mydetails.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/private/private.xml" afterPath="$PROJECT_DIR$/nbproject/private/private.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/Node.java" afterPath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/Node.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/NodeDriverUI.form" afterPath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/NodeDriverUI.form" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/NodeDriverUI.java" afterPath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/NodeDriverUI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/rmi/RMIHeartBeatOKRequest.java" afterPath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/rmi/RMIHeartBeatOKRequest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/rmi/RMIHeartBeatRequest.java" afterPath="$PROJECT_DIR$/src/org/cse13/ds/dfs/node/rmi/RMIHeartBeatRequest.java" />
     </list>
     <ignored path="dfs.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/bin/" />
+    <ignored path=".idea/dataSources.local.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,6 +21,20 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="dfs" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="Node.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/cse13/ds/dfs/node/Node.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="194">
+              <caret line="278" column="67" selection-start-line="278" selection-start-column="67" selection-end-line="278" selection-end-column="67" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -685,12 +685,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1510307851793</updated>
-      <workItem from="1510307859110" duration="34000" />
+      <workItem from="1510307859110" duration="228000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="34000" />
+    <option name="totallyTimeSpent" value="228000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1370" height="744" extended-state="0" />
@@ -707,7 +707,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24961832" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24961832" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -736,5 +736,15 @@
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/org/cse13/ds/dfs/node/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="278" column="67" selection-start-line="278" selection-start-column="67" selection-end-line="278" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

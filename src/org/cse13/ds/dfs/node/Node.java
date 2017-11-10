@@ -171,6 +171,7 @@ public class Node {
             });
         }
         
+        MyNeighbours.removeAll(remove);
         System.out.println("Neighbour size: "+MyNeighbours.size());
     }
 
@@ -276,7 +277,7 @@ public class Node {
 
             Neighbour neighbour = null;
             for (Neighbour key : MyNeighbourHeartBeats.keySet()) {
-                if (key.getIp() == ipAddress && key.getPort() == port) {
+                if (key.getIp().equals(ipAddress) && key.getPort() == port) {
                     neighbour = key;
                 }
             }
@@ -422,6 +423,7 @@ public class Node {
     public void searchInUI(String text) {
         ArrayList<String> searchResults = searchFiles(text); //search file in the own directory
         if (searchResults.size() > 0) {
+            ui.showMessageAlreadyIn();
             System.out.println("File Found in My Node");
         } else {
             //check whether filename is already included in previous search results
