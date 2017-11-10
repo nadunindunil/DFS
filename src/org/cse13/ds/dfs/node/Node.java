@@ -359,15 +359,18 @@ public class Node {
         //select random neighbour to forward request
         Random r = new Random();
         Neighbour randomSuccessor = null;
+        int totalIterations = 0;
 
         while (true) {
             randomSuccessor = MyNeighbours.get(r.nextInt(MyNeighbours.size()));
             //check whether selected node is equal to myself.
             //TODO: check the ip also
-            if (randomSuccessor.getPort() != this.nodePort) {
+            if (((randomSuccessor.getPort() != this.nodePort) && (randomSuccessor.getProbability()>0.5)) || ((randomSuccessor.getPort() != this.nodePort) && (totalIterations>=MyNeighbours.size()))) {
                 break;
             }
+            totalIterations++;
         }
+        
 
         System.out.println("File Couldn't found & File Search Request forwarded");
         randomSuccessor.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress, nodePort,
