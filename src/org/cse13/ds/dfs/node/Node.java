@@ -146,10 +146,15 @@ public class Node {
         return nodePort;
     }
 
-    private void addNeighboursToHearBeatList() {
+    private void addNeighboursToHearBeatList(List<Neighbour> nodeList) {
+        
         synchronized (lock) {
-            MyNeighbours.stream().forEachOrdered((node) -> MyNeighbourHeartBeats.put(node, 0));
+            if(nodeList != null) {
+                nodeList.stream().forEachOrdered((node) -> MyNeighbourHeartBeats.put(node, 0));
+            }
+           
         }
+        System.out.println("Size....."+MyNeighbourHeartBeats.size());
     }
 
     public synchronized void addNeighbour(Neighbour neighbour) {
@@ -165,6 +170,8 @@ public class Node {
                 remove.add(node);
             });
         }
+        
+        System.out.println("Neighbour size: "+MyNeighbours.size());
     }
 
     public void connect(List<Neighbour> nodeList) throws IOException, NotBoundException {
@@ -178,7 +185,7 @@ public class Node {
 
             }
         } else {
-            System.out.println("null in " + name);
+            //System.out.println("null in " + name);
         }
     }
 
@@ -282,7 +289,7 @@ public class Node {
         return bootstrapCommunicator.register(ipAddress, nodePort, name);
     }
 
-    private void printNeighbours() {
+    public void printNeighbours() {
         for (Neighbour n : MyNeighbours) {
             System.out.println("Neighbour: " + n.getPort() + "," + n.getIp());
         }
@@ -315,7 +322,7 @@ public class Node {
         }
 
         connect(nodeList);
-        addNeighboursToHearBeatList();
+        addNeighboursToHearBeatList(nodeList);
 
         Runnable runnableHeartBeatSender = () -> {
             Timer timer = new Timer();
@@ -353,7 +360,7 @@ public class Node {
 
                     }
                 }
-            }, 1 * 1000, 1 * 1000);
+            }, 3 * 1000, 3 * 1000);
         };
         Thread heartBeatReceiveThread = new Thread(runnableHeartBeatReceiver);
         heartBeatReceiveThread.start();

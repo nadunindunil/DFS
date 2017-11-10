@@ -18,7 +18,7 @@ public class RMIHeartBeatOKRequest extends RMIRequest {
 
     @Override
     public void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException, ConnectException {
-        //System.out.println("a HBOK was received from " + this.getFromIP() + "," + this.getFromPort());
+        System.out.println("a HBOK was received from " + this.getFromIP() + "," + this.getFromPort());
         
 //        node.proccessHeartBeatReceive(this.getFromIP(),this.getFromPort());
             node.processHeartBeatOK(this.getFromIP(),this.getFromPort());

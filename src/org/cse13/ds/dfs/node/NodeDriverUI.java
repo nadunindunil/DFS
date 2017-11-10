@@ -58,7 +58,10 @@ public class NodeDriverUI extends javax.swing.JFrame {
     public void setMyNeighboursDetails(String ip, String port) {
         DefaultTableModel dtm = (DefaultTableModel) myNeighboursTable.getModel();
         int currentRowCount = dtm.getRowCount();
-        dtm.addRow(new String[]{"Neighbour " + (currentRowCount + 1), ip, port});
+        if(currentRowCount<3) {
+            dtm.addRow(new String[]{"Neighbour " + (currentRowCount + 1), ip, port});
+        }
+        
     }
 
     //show message
@@ -76,6 +79,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
                 } else {
                     System.out.println("No Option");
                 }
+                
             }
         }).start();
 
@@ -112,6 +116,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
         myNeighboursTable = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         terminalText = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Distributed p2p filesystem");
@@ -235,6 +240,14 @@ public class NodeDriverUI extends javax.swing.JFrame {
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
         jPanel2.add(terminalText, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 424, 620, 20));
 
+        jButton4.setText("jButton4");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, -1, -1));
+
         jTabbedPane2.addTab("Network Details", jPanel2);
 
         getContentPane().add(jTabbedPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 700, 490));
@@ -255,6 +268,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
                     n1.readStdin();
                 }
             });
+            
 
             //display file names
             ArrayList<String> keysAsArray = new ArrayList<String>(n1.getFilesToStore().keySet());
@@ -291,6 +305,10 @@ public class NodeDriverUI extends javax.swing.JFrame {
     private void searchBoxKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchBoxKeyReleased
 
     }//GEN-LAST:event_searchBoxKeyReleased
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        n1.printNeighbours();
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -333,6 +351,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
