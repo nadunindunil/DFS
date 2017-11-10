@@ -28,7 +28,9 @@ import java.util.logging.Logger;
 import org.cse13.ds.dfs.heartBeater.HeartBeater;
 
 public class Node {
-
+    
+    private boolean showHeartBeat=false;    //show output in heartbeat
+    
     private final String ipAddress;
     private final int nodePort;
     private final String name;
@@ -85,7 +87,7 @@ public class Node {
             while (line != null) {
                 ownIPsPorts.add(new String[]{line.split(" ")[0], line.split(" ")[1]});
                 line = br.readLine();
-                System.out.println("Test!!!");
+                //System.out.println("Test!!!");
             }
         } finally {
             br.close();
@@ -191,6 +193,7 @@ public class Node {
         synchronized (lock) {
             MyNeighbourHeartBeats.forEach((index, value) -> {
                 if (index.getIp() == ipAddress && index.getPort() == port) {
+                    if(showHeartBeat)
                     System.out.println("inside process heartbeatOK success");
                     MyNeighbourHeartBeats.put(index, 0);
                 }
@@ -202,6 +205,7 @@ public class Node {
         if (!MyNeighbours.isEmpty()) {
             for (Neighbour node : MyNeighbours) {
                 if (node.getPort() != this.nodePort) {
+                    if(showHeartBeat)
                     System.out.println("details :" + node.getIp() + "," + node.getPort());
                     node.rmiConnector.nodeHBSendRequest(new RMIHeartBeatRequest(ipAddress, nodePort, node.getIp(),
                             node.getPort()));
@@ -284,7 +288,7 @@ public class Node {
             try {
                 registry = LocateRegistry.createRegistry(this.getNodePort());
             } catch (RemoteException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             if (registry == null) {
                 throw new AssertionError();
@@ -293,7 +297,7 @@ public class Node {
             System.out.println("Server is Starting...");
 
         } catch (RemoteException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
 
         connect(nodeList);
@@ -306,6 +310,7 @@ public class Node {
                 @Override
                 public void run() {
                     try {
+                        if(showHeartBeat)
                         System.out.println("Sending Heart Beat");
                         processHeartBeatSend();
                     } catch (MalformedURLException | NotBoundException | RemoteException e) {
@@ -314,7 +319,7 @@ public class Node {
                         Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            }, 2 * 1000, 2 * 1000);
+            }, 1 * 1000, 1 * 1000);
         };
         Thread heartBeatSenderThread = new Thread(runnableHeartBeatSender);
         heartBeatSenderThread.start();
@@ -327,13 +332,14 @@ public class Node {
                 @Override
                 public void run() {
                     try {
+                        if(showHeartBeat)
                         System.out.println("Receiveing Heart beat");
                         proccessHeartBeatReceive();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-            }, 10 * 1000, 10 * 1000);
+            }, 1 * 1000, 1 * 1000);
         };
         Thread heartBeatReceiveThread = new Thread(runnableHeartBeatReceiver);
         heartBeatReceiveThread.start();
@@ -342,7 +348,7 @@ public class Node {
             try {
                 gracefulDeparture();
                 bootstrapCommunicator.unregister(ipAddress, nodePort, name);
-                Thread.sleep(4000);
+                Thread.sleep(2000);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NotBoundException e) {
