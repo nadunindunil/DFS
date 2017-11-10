@@ -57,6 +57,9 @@ public class Node {
     //to send fileOKresponse
     RMIConnector rmiConnector;
 
+    //to keep records of successful seaches
+    private ArrayList<String[]> searchRecords = new ArrayList<String[]>();
+
     private volatile HashMap<Neighbour, Integer> MyNeighbourHeartBeats = new HashMap<>();
     private final Object lock = new Object();
 
@@ -116,7 +119,6 @@ public class Node {
             String line = br.readLine();
 
             while (line != null) {
-                System.out.println("line: " + line);
                 ownIPsPorts.add(new String[]{line.split(" ")[0], line.split(" ")[1]});
                 line = br.readLine();
             }
@@ -150,6 +152,7 @@ public class Node {
 
     public synchronized void addNeighbour(Neighbour neighbour) {
         this.MyNeighbours.add(neighbour);
+        ui.setMyNeighboursDetails(neighbour.getIp(), String.valueOf(neighbour.getPort()));
         printNeighbours();
     }
 
@@ -181,6 +184,16 @@ public class Node {
         for (Neighbour node : MyNeighbours) {
             node.rmiConnector.nodeLeaveRequest(new RMILeaveRequest(ipAddress, nodePort, node.getIp(),
                     node.getPort()));
+        }
+
+        System.out.println("Graceful Departure!!!");
+        //remove searchRecords
+        for (String[] details : searchRecords) {
+            System.out.println(details[1]+" "+details[2]);
+            Neighbour n = new Neighbour(details[1], Integer.parseInt(details[2]), (float) 1.0);
+            System.out.println("Remove records request "+details[0]+" "+details[1]);
+            n.rmiConnector.nodeRemoveRecordsRequest(new RMIRecordRemoveRequest(ipAddress, nodePort, n.getIp(),
+                    n.getPort()));
         }
 
         MyNeighbours.clear();
@@ -235,8 +248,8 @@ public class Node {
             } else {
                 // hbt neigbour list 0 action   -- empty neighbour list
                 try {
-                    bootstrapCommunicator.unregister(this.ipAddress, this.nodePort, this.name);
-                    start();
+                    //bootstrapCommunicator.unregister(this.ipAddress, this.nodePort, this.name);
+                    //start();
                 } catch (Exception e) {
 
                 }
@@ -283,8 +296,9 @@ public class Node {
             Registry registry = null;
             try {
                 registry = LocateRegistry.createRegistry(this.getNodePort());
+                ui.setMyDetails(this.getIpAddress(), String.valueOf(this.getNodePort()));//display my details
             } catch (RemoteException e) {
-                e.printStackTrace();
+
             }
             if (registry == null) {
                 throw new AssertionError();
@@ -330,7 +344,7 @@ public class Node {
                         System.out.println("Receiveing Heart beat");
                         proccessHeartBeatReceive();
                     } catch (Exception e) {
-                        e.printStackTrace();
+
                     }
                 }
             }, 10 * 1000, 10 * 1000);
@@ -493,7 +507,7 @@ public class Node {
             randomSuccessor = MyNeighbours.get(r.nextInt(MyNeighbours.size()));
             //check whether selected node is equal to myself.
             //TODO: check the ip also
-            if (((randomSuccessor.getPort() != this.nodePort) && (randomSuccessor.getProbability() > 0.5)) || ((randomSuccessor.getPort() != this.nodePort) && (totalIterations >= MyNeighbours.size()))) {
+            if (((randomSuccessor.getPort() != this.nodePort) && (randomSuccessor.getProbability() > 0.4)) || ((randomSuccessor.getPort() != this.nodePort) && (totalIterations >= MyNeighbours.size()))) {
                 break;
             }
             totalIterations++;
@@ -522,6 +536,7 @@ public class Node {
         System.out.println(randomSuccessor.getIp() + " " + randomSuccessor.getPort());
 
         Neighbour n = new Neighbour(originatorIP, originatorPort, (float) 1.0);
+        
         n.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP,
                 originatorPort, searchResults, hops, ipAddress, nodePort));
     }
@@ -580,6 +595,27 @@ public class Node {
      */
     public void setOwnIPsPorts(ArrayList<String[]> ownIPsPorts) {
         this.ownIPsPorts = ownIPsPorts;
+    }
+
+    //show alert dialog
+    public void showMessage() {
+        ui.showMessage();
+    }
+
+    //add successful search records
+    public void addRecords(String fileName, String originatorIP, String originatorPort) {
+        searchRecords.add(new String[]{fileName, originatorIP, originatorPort});
+    }
+
+    //remove previous search results when graceful departure
+    public void removeSearchResults(String ip, String port) {
+        System.out.println("Remove records request arrived"+ip+" "+port);
+        for (String fileNames : searchedResults.keySet()) {
+            String[] ownerDetails = searchedResults.get(fileNames);
+            if ((ownerDetails[0].equals(ip)) && (ownerDetails[1].equals(port))) {
+                searchedResults.remove(fileNames);
+            }
+        }
     }
 
 }

@@ -58,4 +58,8 @@ public class RMIConnector {
         rmiServer.nodeHBSendOkRequestHandle(rmiRequest);
     }
 
+    public void nodeRemoveRecordsRequest(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiServer.removeRecordsRequestHandle(rmiRequest);
+    }
+
 }

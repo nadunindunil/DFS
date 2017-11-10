@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.cse13.ds.dfs.server.BootstrapServer;
 
@@ -35,7 +35,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
 
     public void setSearchResults(ArrayList<String[]> searchResults) {
         endTime = System.nanoTime() - startTime;
-        System.out.println(startTime+" "+System.currentTimeMillis());
+        System.out.println(startTime + " " + System.currentTimeMillis());
         elapsedTimeLabel.setText(String.valueOf(endTime));
         //display results
         DefaultTableModel dtm = new DefaultTableModel(0, 0);
@@ -48,6 +48,39 @@ public class NodeDriverUI extends javax.swing.JFrame {
         }
     }
 
+    //display my ip and port
+    public void setMyDetails(String ip, String port) {
+        myIPLabel.setText(ip);
+        myPort.setText(port);
+    }
+
+    //display my neighbours
+    public void setMyNeighboursDetails(String ip, String port) {
+        DefaultTableModel dtm = (DefaultTableModel) myNeighboursTable.getModel();
+        int currentRowCount = dtm.getRowCount();
+        dtm.addRow(new String[]{"Neighbour " + (currentRowCount + 1), ip, port});
+    }
+
+    //show message
+    public void showMessage() {
+        NodeDriverUI ui = this;
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int dialogResult = JOptionPane.showConfirmDialog(ui, "File Not Found. Do you want to search again?", "File Not Found", dialogButton);
+                if (dialogResult == 0) {
+                    startTime = System.nanoTime();
+                    n1.searchInUI(searchBox.getText());
+                } else {
+                    System.out.println("No Option");
+                }
+            }
+        }).start();
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -57,6 +90,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -68,6 +102,16 @@ public class NodeDriverUI extends javax.swing.JFrame {
         resultsFilesTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         elapsedTimeLabel = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        myPort = new javax.swing.JLabel();
+        myIPLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        myNeighboursTable = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        terminalText = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Distributed p2p filesystem");
@@ -149,9 +193,51 @@ public class NodeDriverUI extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("Elapsed Time: ");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, -1, -1));
-        jPanel1.add(elapsedTimeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, 110, 20));
+        jPanel1.add(elapsedTimeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, 110, 30));
+        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, -1, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 720, 500));
+        jTabbedPane2.addTab("Search File", jPanel1);
+
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel2.setText("My Port : ");
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 20, -1, -1));
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("My Neighbours");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, -1, -1));
+        jPanel2.add(myPort, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 20, 130, 20));
+        jPanel2.add(myIPLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 130, 20));
+
+        myNeighboursTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Neighbour", "IP", "Port"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(myNeighboursTable);
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 650, 110));
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setText("My IP : ");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+        jPanel2.add(terminalText, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 424, 620, 20));
+
+        jTabbedPane2.addTab("Network Details", jPanel2);
+
+        getContentPane().add(jTabbedPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 700, 490));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -203,7 +289,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void searchBoxKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchBoxKeyReleased
-        
+
     }//GEN-LAST:event_searchBoxKeyReleased
 
     /**
@@ -248,10 +334,21 @@ public class NodeDriverUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JLabel myIPLabel;
+    private javax.swing.JTable myNeighboursTable;
+    private javax.swing.JLabel myPort;
     private javax.swing.JTable resultsFilesTable;
     private javax.swing.JTextField searchBox;
+    private javax.swing.JLabel terminalText;
     // End of variables declaration//GEN-END:variables
 }

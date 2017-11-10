@@ -61,4 +61,9 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
     public void nodeHBSendOkRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException, ConnectException{
         rmiRequest.handle(this.node);
     }
+
+    @Override
+    public void removeRecordsRequestHandle(RMIRequest rmiRequest) throws RemoteException, NotBoundException, MalformedURLException {
+        rmiRequest.handle(node);
+    }
 }

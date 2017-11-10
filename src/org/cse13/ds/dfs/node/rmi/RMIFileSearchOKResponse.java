@@ -47,6 +47,7 @@ public class RMIFileSearchOKResponse extends RMIRequest {
         }
 
         if (numberOfHops == -10 && searchResults == null) {
+            node.showMessage();
             System.out.println("File not found");
         }
     }

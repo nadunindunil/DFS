@@ -33,6 +33,7 @@ public class RMIFileSearchRequest extends RMIRequest {
         hops--;
         if (searchResults.size() > 0) {
             System.out.println("File Found!!!");
+            node.addRecords(fileName, originatorIP, String.valueOf(originatorPort));
             node.forwardFileSearchOKResponse(searchResults, hops, originatorIP, originatorPort);
         } else {
             if (hops > 0) {
