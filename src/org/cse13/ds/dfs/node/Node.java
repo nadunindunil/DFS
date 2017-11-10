@@ -29,6 +29,8 @@ import org.cse13.ds.dfs.heartBeater.HeartBeater;
 
 public class Node {
 
+    private boolean showHeartBeat=false;    //show output in heartbeat
+
     private final String ipAddress;
     private final int nodePort;
     private final String name;
@@ -88,7 +90,7 @@ public class Node {
             while (line != null) {
                 ownIPsPorts.add(new String[]{line.split(" ")[0], line.split(" ")[1]});
                 line = br.readLine();
-                System.out.println("Test!!!");
+                //System.out.println("Test!!!");
             }
         } finally {
             br.close();
@@ -204,6 +206,7 @@ public class Node {
         synchronized (lock) {
             MyNeighbourHeartBeats.forEach((index, value) -> {
                 if (index.getIp() == ipAddress && index.getPort() == port) {
+                    if(showHeartBeat)
                     System.out.println("inside process heartbeatOK success");
                     MyNeighbourHeartBeats.put(index, 0);
                 }
@@ -215,6 +218,7 @@ public class Node {
         if (!MyNeighbours.isEmpty()) {
             for (Neighbour node : MyNeighbours) {
                 if (node.getPort() != this.nodePort) {
+                    if(showHeartBeat)
                     System.out.println("details :" + node.getIp() + "," + node.getPort());
                     node.rmiConnector.nodeHBSendRequest(new RMIHeartBeatRequest(ipAddress, nodePort, node.getIp(),
                             node.getPort()));
@@ -307,7 +311,7 @@ public class Node {
             System.out.println("Server is Starting...");
 
         } catch (RemoteException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
 
         connect(nodeList);
@@ -320,7 +324,8 @@ public class Node {
                 @Override
                 public void run() {
                     try {
-                        //System.out.println("Sending Heart Beat");
+                        if(showHeartBeat)
+                        System.out.println("Sending Heart Beat");
                         processHeartBeatSend();
                     } catch (MalformedURLException | NotBoundException | RemoteException e) {
                         System.out.println("e");
@@ -328,7 +333,7 @@ public class Node {
                         Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            }, 2 * 1000, 2 * 1000);
+            }, 1 * 1000, 1 * 1000);
         };
         Thread heartBeatSenderThread = new Thread(runnableHeartBeatSender);
         heartBeatSenderThread.start();
@@ -341,13 +346,14 @@ public class Node {
                 @Override
                 public void run() {
                     try {
+                        if(showHeartBeat)
                         System.out.println("Receiveing Heart beat");
                         proccessHeartBeatReceive();
                     } catch (Exception e) {
 
                     }
                 }
-            }, 10 * 1000, 10 * 1000);
+            }, 1 * 1000, 1 * 1000);
         };
         Thread heartBeatReceiveThread = new Thread(runnableHeartBeatReceiver);
         heartBeatReceiveThread.start();
@@ -356,7 +362,7 @@ public class Node {
             try {
                 gracefulDeparture();
                 bootstrapCommunicator.unregister(ipAddress, nodePort, name);
-                Thread.sleep(4000);
+                Thread.sleep(2000);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NotBoundException e) {
@@ -446,10 +452,48 @@ public class Node {
         allFiles.put("La_La_Land", new File("G:\\Films\\LR\\La_La_Land.mov"));
         allFiles.put("Transformers", new File("G:\\Films\\Transformers\\Transformers.mov"));
         allFiles.put("Spider_Man_1", new File("G:\\Films\\SP\\Spider_Man_1.mov"));
-        allFiles.put("XXX", new File("G:\\Films\\XXX\\XXX.mov"));
+        allFiles.put("abc", new File("G:\\Films\\abc\\abc.mov"));
+
+                // The name of the file to open.
+        String fileName = "FileNames.txt";
+
+        // This will reference one line at a time
+        String line = null;
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader =
+                new FileReader(fileName);
+
+            System.out.println(fileReader);
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader =
+                new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                //System.out.println(line);
+                allFiles.put(line,new File(line));
+            }
+
+            // Always close files.
+            bufferedReader.close();
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" +
+                fileName + "'");
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '"
+                + fileName + "'");
+            // Or we could just do this:
+            // ex.printStackTrace();
+        }
+
 
         //generate 3 random indices to pick files from hashmap
-        int[] randomIndices = new Random().ints(1, 6).distinct().limit(3).toArray();
+        int[] randomIndices = new Random().ints(1, allFiles.size()).distinct().limit(3).toArray();
 
         System.out.println("Initiated Files-----------------------");
         //pick files randomly
@@ -536,7 +580,7 @@ public class Node {
         System.out.println(randomSuccessor.getIp() + " " + randomSuccessor.getPort());
 
         Neighbour n = new Neighbour(originatorIP, originatorPort, (float) 1.0);
-        
+
         n.rmiConnector.fileSearchOk(new RMIFileSearchOKResponse(ipAddress, nodePort, originatorIP,
                 originatorPort, searchResults, hops, ipAddress, nodePort));
     }
