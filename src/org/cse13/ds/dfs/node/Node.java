@@ -58,6 +58,7 @@ public class Node {
     RMIConnector rmiConnector;
 
     private volatile HashMap<Neighbour, Integer> MyNeighbourHeartBeats = new HashMap<>();
+    private final Object lock = new Object();
 
     public Node(String ip_address) throws RemoteException, NotBoundException, MalformedURLException, FileNotFoundException, IOException {
         this.ipAddress = ip_address;
@@ -115,7 +116,7 @@ public class Node {
             String line = br.readLine();
 
             while (line != null) {
-                System.out.println("line: "+line);
+                System.out.println("line: " + line);
                 ownIPsPorts.add(new String[]{line.split(" ")[0], line.split(" ")[1]});
                 line = br.readLine();
             }
@@ -124,7 +125,7 @@ public class Node {
         }
     }
 
-    public HeartBeater getHeartBeater(){
+    public HeartBeater getHeartBeater() {
         return this.heartBeater;
     }
 
@@ -141,8 +142,10 @@ public class Node {
         return nodePort;
     }
 
-    private void addNeighboursToHearBeatList(){
-        MyNeighbours.stream().forEachOrdered((node) -> MyNeighbourHeartBeats.put(node, 0));
+    private void addNeighboursToHearBeatList() {
+        synchronized (lock) {
+            MyNeighbours.stream().forEachOrdered((node) -> MyNeighbourHeartBeats.put(node, 0));
+        }
     }
 
     public synchronized void addNeighbour(Neighbour neighbour) {
@@ -184,64 +187,67 @@ public class Node {
     }
 
     //////////////////////// heartbeat /////////////////////////////////////////////
-
-    public void processHeartBeatOK(String ipAddress, int port){
-        MyNeighbourHeartBeats.forEach((index,value) -> {
-            if (index.getIp() == ipAddress && index.getPort() == port){
-                System.out.println("inside process heartbeatOK success");
-                MyNeighbourHeartBeats.put(index,0);
-            }
-        });
+    public void processHeartBeatOK(String ipAddress, int port) {
+        synchronized (lock) {
+            MyNeighbourHeartBeats.forEach((index, value) -> {
+                if (index.getIp() == ipAddress && index.getPort() == port) {
+                    System.out.println("inside process heartbeatOK success");
+                    MyNeighbourHeartBeats.put(index, 0);
+                }
+            });
+        }
     }
 
-    private void processHeartBeatSend() throws RemoteException, NotBoundException, MalformedURLException, ConnectException, InterruptedException{
+    private void processHeartBeatSend() throws RemoteException, NotBoundException, MalformedURLException, ConnectException, InterruptedException {
         if (!MyNeighbours.isEmpty()) {
             for (Neighbour node : MyNeighbours) {
                 if (node.getPort() != this.nodePort) {
                     System.out.println("details :" + node.getIp() + "," + node.getPort());
-                    node.rmiConnector.nodeHBSendRequest(new RMIHeartBeatRequest(ipAddress,nodePort,node.getIp(),
-                    node.getPort()));
+                    node.rmiConnector.nodeHBSendRequest(new RMIHeartBeatRequest(ipAddress, nodePort, node.getIp(),
+                            node.getPort()));
                 }
             }
         }
     }
 
-    private void proccessHeartBeatReceive() throws InterruptedException{
+    private void proccessHeartBeatReceive() throws InterruptedException {
+        synchronized (lock) {
 
-        System.out.println("inside hashmap function, length: " + MyNeighbourHeartBeats.size());
+            System.out.println("inside hashmap function, length: " + MyNeighbourHeartBeats.size());
 
-        MyNeighbourHeartBeats.forEach((index,value) -> {
-            System.out.println(index + ", " + value);
-            if (value < -5){
-                try {
-                    // heartbeat has been lost for three times!!!
-                    removeNeighbour(index.getIp(),index.getPort());
-                    removeHeartBeater(index.getIp(),index.getPort());
-                    System.out.println("removing node :" + index.getPort() + " from system");
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            MyNeighbourHeartBeats.forEach((index, value) -> {
+                System.out.println(index + ", " + value);
+                if (value < -5) {
+                    try {
+                        // heartbeat has been lost for three times!!!
+                        removeNeighbour(index.getIp(), index.getPort());
+                        removeHeartBeater(index.getIp(), index.getPort());
+                        System.out.println("removing node :" + index.getPort() + " from system");
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    System.out.println("decreasing 1 from node, value: " + value);
+                    MyNeighbourHeartBeats.put(index, MyNeighbourHeartBeats.get(index) - 1);
                 }
-            }
-            else {
-                System.out.println("decreasing 1 from node, value: " + value);
-                MyNeighbourHeartBeats.put(index,MyNeighbourHeartBeats.get(index) - 1);
-            }
-        });
+            });
+        }
     }
 
-    private synchronized void removeHeartBeater(String ipAddress, int port) throws InterruptedException{
-        Neighbour neighbour = null;
-        for (Neighbour key : MyNeighbourHeartBeats.keySet()) {
-            if (key.getIp() == ipAddress && key.getPort() == port){
-                neighbour = key;
+    private synchronized void removeHeartBeater(String ipAddress, int port) throws InterruptedException {
+        synchronized (lock) {
+
+            Neighbour neighbour = null;
+            for (Neighbour key : MyNeighbourHeartBeats.keySet()) {
+                if (key.getIp() == ipAddress && key.getPort() == port) {
+                    neighbour = key;
+                }
             }
+            MyNeighbourHeartBeats.remove(neighbour);
         }
-        MyNeighbourHeartBeats.remove(neighbour);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-
     private List<Neighbour> register() throws IOException, NotBoundException {
         return bootstrapCommunicator.register(ipAddress, nodePort, name);
     }
@@ -295,13 +301,12 @@ public class Node {
                         Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            }, 2*1000, 2*1000);
+            }, 2 * 1000, 2 * 1000);
         };
         Thread heartBeatSenderThread = new Thread(runnableHeartBeatSender);
         heartBeatSenderThread.start();
 
         ////////////////////////////////////////////////////////////////////////
-
         Runnable runnableHeartBeatReceiver = () -> {
             Timer timer = new Timer();
 
@@ -315,12 +320,10 @@ public class Node {
                         e.printStackTrace();
                     }
                 }
-            }, 10*1000, 10*1000);
+            }, 10 * 1000, 10 * 1000);
         };
         Thread heartBeatReceiveThread = new Thread(runnableHeartBeatReceiver);
         heartBeatReceiveThread.start();
-
-
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -477,12 +480,11 @@ public class Node {
             randomSuccessor = MyNeighbours.get(r.nextInt(MyNeighbours.size()));
             //check whether selected node is equal to myself.
             //TODO: check the ip also
-            if (((randomSuccessor.getPort() != this.nodePort) && (randomSuccessor.getProbability()>0.5)) || ((randomSuccessor.getPort() != this.nodePort) && (totalIterations>=MyNeighbours.size()))) {
+            if (((randomSuccessor.getPort() != this.nodePort) && (randomSuccessor.getProbability() > 0.5)) || ((randomSuccessor.getPort() != this.nodePort) && (totalIterations >= MyNeighbours.size()))) {
                 break;
             }
             totalIterations++;
         }
-
 
         System.out.println("File Couldn't found & File Search Request forwarded");
         randomSuccessor.rmiConnector.fileSearchRequest(new RMIFileSearchRequest(fileNameToSearch, hops, ipAddress, nodePort,
