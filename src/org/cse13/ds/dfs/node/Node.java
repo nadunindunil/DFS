@@ -287,7 +287,7 @@ public class Node {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("Sending Heart Beat");
+                        //System.out.println("Sending Heart Beat");
                         processHeartBeatSend();
                     } catch (MalformedURLException | NotBoundException | RemoteException e) {
                         System.out.println("e");
@@ -384,7 +384,7 @@ public class Node {
                 try {
                     //forward request to owner
                     System.out.println("File found from previous searched results. Request is forwarded directly to the owner.");
-                    forwardFileSearchRequestToOwner(text, 3, ownersDetailsOfFiles[0], Integer.parseInt(ownersDetailsOfFiles[1]), ipAddress, nodePort);
+                    forwardFileSearchRequestToOwner(text, 15, ownersDetailsOfFiles[0], Integer.parseInt(ownersDetailsOfFiles[1]), ipAddress, nodePort);
                 } catch (RemoteException ex) {
                     Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NotBoundException ex) {
@@ -394,7 +394,7 @@ public class Node {
                 }
             } else {
                 try {
-                    forwardFileSearchRequest(text, 3, ipAddress, nodePort); //forward request to a neighbour
+                    forwardFileSearchRequest(text, 15, ipAddress, nodePort); //forward request to a neighbour
                 } catch (RemoteException ex) {
                     Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NotBoundException ex) {

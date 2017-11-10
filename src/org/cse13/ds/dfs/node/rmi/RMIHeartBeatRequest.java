@@ -24,7 +24,7 @@ public class RMIHeartBeatRequest extends RMIRequest {
 
     @Override
     public void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException, ConnectException {
-        System.out.println("a HB received from" + this.getFromIP() + " , " + this.getFromPort());
+        //System.out.println("a HB received from" + this.getFromIP() + " , " + this.getFromPort());
         
         Neighbour neighbour = new Neighbour(getFromIP(),getFromPort(), (float)1.0);
         neighbour.rmiConnector.nodeHBSendOKRequest(new RMIHeartBeatOKRequest(getToIP(),getToPort(),getFromIP(),getFromPort
