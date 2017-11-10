@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Created by nadunindunil on 11/7/17.
  */
 public class RMIJoinRequest extends RMIRequest{
-    
+
     ArrayList<String[]> ownIPsPorts;
 
     public RMIJoinRequest(String fromIP, int fromPort, String toIP, int toPort, ArrayList<String[]> ownIPsPorts) {
@@ -24,9 +24,9 @@ public class RMIJoinRequest extends RMIRequest{
     public void handle(Node node) throws RemoteException, NotBoundException, MalformedURLException {
         ArrayList<String[]> allConnectedNodes = node.getAllConnectedNodes();
         boolean isExists = false;
-        
+
         float probablity = (float)1.0;
-        
+
         //calculate probability based on past behavior of the node.
         for(String[] connectionDetails: allConnectedNodes) {
             System.out.println("Connected Nodes Details: "+connectionDetails[0]+" "+connectionDetails[1]);
@@ -38,13 +38,13 @@ public class RMIJoinRequest extends RMIRequest{
                 }
             }
         }
-        
+
         //record the neighbours
         allConnectedNodes.add(new String[]{getFromIP(), String.valueOf(getFromPort())});
         node.setAllConnectedNodes(allConnectedNodes);
-        
+
         System.out.println("probability: "+probablity);
-        
+
         Neighbour neighbour = new Neighbour(getFromIP(),getFromPort(), probablity);
         node.addNeighbour(neighbour);
 

@@ -3,17 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/rmi/RMIJoinOKRequest.java</file>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/rmi/RMIRequest.java</file>
             <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/server/BootstrapServer.java</file>
             <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/NodeDriverUI.java</file>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/utils/Request.java</file>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/rmi/RMIFileSearchRequest.java</file>
             <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/rmi/RMIFileSearchOKResponse.java</file>
             <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/Node.java</file>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/rmi/RMILeaveRequest.java</file>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/rmi/RMIJoinRequest.java</file>
-            <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/Neighbour.java</file>
             <file>file:/C:/Users/kjtdi/OneDrive/Documents/NetBeansProjects/DistributedSE/src/org/cse13/ds/dfs/node/NodeDriver.java</file>
         </group>
     </open-files>
