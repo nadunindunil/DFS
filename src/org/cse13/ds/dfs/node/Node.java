@@ -211,10 +211,13 @@ public class Node {
     //////////////////////// heartbeat /////////////////////////////////////////////
     public void processHeartBeatOK(String ipAddress, int port) {
         synchronized (lock) {
+            System.out.println("inside the heartbeat ok lock");
             MyNeighbourHeartBeats.forEach((index, value) -> {
-                if (index.getIp() == ipAddress && index.getPort() == port) {
-                    if(showHeartBeat)
+                System.out.println(index.getPort() + "," + port);
+                System.out.println(index.getIp() + "," + ipAddress);
+                if (ipAddress.equals(index.getIp()) && index.getPort() == port) {
                     System.out.println("inside process heartbeatOK success");
+                    
                     MyNeighbourHeartBeats.put(index, 0);
                 }
             });
@@ -312,7 +315,7 @@ public class Node {
 
             }
             if (registry == null) {
-                throw new AssertionError();
+                //throw new AssertionError();
             }
             registry.rebind("RMIServer", new RMIServerImpl(this));
             System.out.println("Server is Starting...");
