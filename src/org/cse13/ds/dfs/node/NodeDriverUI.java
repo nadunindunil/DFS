@@ -49,6 +49,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         searchBox = new javax.swing.JTextField();
@@ -57,9 +58,14 @@ public class NodeDriverUI extends javax.swing.JFrame {
         searchResultsList = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         initFileList1 = new javax.swing.JList();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Distributed p2p filesystem");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton1.setText("Start Node");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -67,7 +73,7 @@ public class NodeDriverUI extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 109, -1, 32));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, 32));
 
         jButton2.setText("Start BS");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -75,8 +81,8 @@ public class NodeDriverUI extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 34, 85, 32));
-        getContentPane().add(searchBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 30, 270, 40));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 100, 32));
+        jPanel1.add(searchBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 270, 40));
 
         jButton3.setText("Search");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -84,15 +90,32 @@ public class NodeDriverUI extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 110, 270, 30));
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 80, 270, 30));
 
         jScrollPane1.setViewportView(searchResultsList);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 160, 260, 150));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, 260, 150));
 
         jScrollPane2.setViewportView(initFileList1);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, 260, 150));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 260, 150));
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2"
+            }
+        ));
+        jScrollPane3.setViewportView(jTable1);
+
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 320, 380, 130));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 720, 500));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -179,8 +202,11 @@ public class NodeDriverUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField searchBox;
     private javax.swing.JList searchResultsList;
     // End of variables declaration//GEN-END:variables
