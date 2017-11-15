@@ -5,7 +5,7 @@ package org.cse13.ds.dfs;
  */
 public class Constants {
 
-    public static final String BOOTSERVER_IP = "127.0.0.1";
+    public static final String BOOTSERVER_IP = "54.149.65.124";
     public static final int BOOTSERVER_PORT = 55555;
 
     public static final String REGISTER_FORMAT = "REG %s %d %s";
